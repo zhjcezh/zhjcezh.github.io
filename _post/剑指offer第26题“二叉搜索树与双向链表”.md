@@ -1,0 +1,116 @@
+---
+layout:     post
+title:      "剑指offer第26题“二叉搜索树与双向链表”"
+subtitle:   ""
+date:       2019-03-12 14:00:00
+author:     "Cfeng"
+header-img: "img/post-bg-halting.jpg"
+catalog: true
+tags:
+    - 笔试
+    - 剑指Offer
+    - 算法
+---
+# 二叉搜索树与双向链表
+## 题目描述
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
+***
+## 思路
+二叉搜索树要变成一个有序的序列。二叉搜索树的中序遍历序列，就是一个有序序列，所以我们可以直接通过中序遍历来做。
+先找到最左边的节点，并赋值给head，用来返回。然后和它的根节点互联，接下来的所有节点都与前面的节点互联即可。
+用stack要写import java.util.Stack;开始忘了，导致编译错误。
+## Java实现
+```
+/*
+public class TreeNode {
+    int val = 0;
+    TreeNode left = null;
+    TreeNode right = null;
+
+    public TreeNode(int val) {
+        this.val = val;
+
+    }
+
+}
+*/
+import java.util.Stack;
+public class Solution {
+    public TreeNode Convert(TreeNode pRootOfTree) {
+        if(pRootOfTree==null){
+            return pRootOfTree;
+        }
+        Stack<TreeNode> st = new Stack<TreeNode>();
+        TreeNode head=null;
+        TreeNode left=null;
+        TreeNode node=pRootOfTree;
+        int flag=0;
+        while(node!=null||!st.empty()){
+            while(node!=null){
+                st.push(node);
+                node=node.left;
+            }
+            node=st.pop();
+            if(flag==0){
+                flag=1;
+                head=node;
+                left=node;
+                node=node.right;
+                continue;
+            }
+            left.right=node;
+            node.left=left;
+            left=node;
+            node=node.right;
+        }
+        return head;
+    }
+}
+```
+后来看到有人用递归做，一开始有想过，后来感觉有点烦就放弃了，现在看了大佬的代码，神奇
+## 递归
+```
+//1、将左子树构成双链表，并返回该链表的头节点(左子树最左边的节点)
+//2、定位到左链表的最后一个节点(左子树最右边的节点)
+//3、如果左子树链表不为空，则将当前root追加到左子树链表后
+//4、将右子树构造成双向链表，并返回链表头结点(右子树最左边的节点)
+//5、如果右子树链表不为空，将右子树链表追加到当前root后
+//6，根据左子树链表是否为空返回的整体双向链表的头节点
+
+//Convert函数把一个二叉搜索树变成一个有序的双向链表，返回双向链表的头结点，参数root为二叉搜索树的根节点
+public TreeNode Convert(TreeNode root){
+    if(root==null){//假如根节点为空，返回空
+        return null;
+    }
+    if(root.left==null&&root.right==null){//假如只有一个根节点，则返回根节点
+        return root;
+    }
+    //1、将左子树构造成双链表，并返回该链表头结点left
+    TreeNode left=Convert(root.left);
+
+    //2、定位到左子树链表的最后一个节点（左子树最右边的节点）
+    TreeNode p=left;//创建一个临时节点P,用来遍历找到左链表的最后一个节点(左子树最右边的节点)，p初始化指向做左子树的根节点，
+    while(p!=null&&p.right!=null){
+        p=p.right;//最终p为左子树最右边的节点
+    }
+    //3、如果左子树链表不为空，将当前root追加到左子树链表后
+    if(left!=null){//左子树链表不为空
+        p.right=root;//左子树链表的最后一个节点p（左子树最右边节点）的右指针指向当前root节点
+        root.left=p;//当前root节点的左指针指向左子树链表的最后一个节点p（左子树最右边节点）
+    }
+    //4、将右子树构造成双链表，并返回该链表的头结点right
+    TreeNode right=Convert(root.right);
+
+    //5、如果右子树链表不为空，将右子树链表追加到当前root后
+    if(right!=null){//右子树链表不为空
+        right.left=root;//右子树链表的头结点right的左指针指向当前root
+        root.right=right;//当前root的右指针指向右子树链表的头结点right
+    }
+    return left!=null?left:root;//根据左子树链表是否为空返回整个双向链表的头指针。  
+}
+--------------------- 
+作者：FutureFlyme 
+来源：CSDN 
+原文：https://blog.csdn.net/FutureFlyme/article/details/69937007 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+```
