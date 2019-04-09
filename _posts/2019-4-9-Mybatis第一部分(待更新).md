@@ -1,15 +1,12 @@
 ---
-layout:     post
-title:      "Mybatis第一部分"
-subtitle:   "每天学习一点点"
-date:       2019-04-09 19:00:00
-author:     "Cfeng"
-header-img: "img/home-bg-o.jpg"
-catalog: true
-tags:
-    - Java
-    - SSM框架
-    - 学习之路
+title: Mybatis第一部分
+catalog: false
+date:
+subtitle:
+header-img:
+top:
+tags: SSM框架
+categories: 学习之路
 ---
 学习视频来自黑马程序员，感谢！
 
