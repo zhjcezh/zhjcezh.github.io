@@ -1,12 +1,16 @@
+
 ---
-title: Mybatis第一部分
-catalog: false
-date:
-subtitle:
-header-img:
-top:
-tags: SSM框架
-categories: 学习之路
+layout:     post
+title:      "Mybatis第一部分"
+subtitle:   ""
+date:       2019-04-10 14:00:00
+author:     "Cfeng"
+header-img: "img/post-bg-css.jpg"
+catalog: true
+tags:
+- SSM框架
+- 学习之路
+- Java
 ---
 学习视频来自黑马程序员，感谢！
 
@@ -17,7 +21,11 @@ java环境：jdk1.8
 数据库  ：mysql5.7
 
 2. jdbc程序
-使用jdbc查询mysql数据库中用户表的记录。
+* 数据库连接，使用时就创建，不使用立即释放，对数据库进行频繁连接开启和关闭，造成数据库资源浪费，影响 数据库性能。
+**解决方法**：使用数据库连接池管理数据库连接。
+
+* 将sql语句硬编码到java代码中，如果sql 语句修改，需要重新编译java代码，不利于系统维护。
+**解决方法**：将sql语句配置在xml配置文件中，即使sql变化，不需要对java代码进行重新编译。
 
 * 向preparedStatement中设置参数，对占位符号位置和设置参数值，硬编码在java代码中，不利于系统维护。
 **解决方法**：将sql语句及占位符和参数全部配置在xml中
