@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "SpringMVC第二部分.md"
+title:      "SpringMVC第二部分"
 subtitle:   ""
 date:       2019-05-12 14:00:00
 author:     "Cfeng"
