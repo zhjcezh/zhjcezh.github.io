@@ -42,5 +42,47 @@ Nacos 能让您从微服务平台建设的视角管理数据中心的所有服�
 
 # 安装Nacos
 下载地址：https://github.com/alibaba/nacos/releases
-cmd startup.cmd -m standalone
+
+下载完成之后，解压。根据不同平台，执行不同命令，启动单机版Nacos服务：
+
+Linux/Unix/Mac：sh startup.sh -m standalone
+Windows：cmd startup.cmd -m standalone
+
+也可直接单击startup.cmd
+
+## 报错分析
+第一次启动直接报错load jdbc.properties error 一看就是数据库相关的错误，查看conf目录下的application.properties果然包含mysql配置
+
+```
+#*************** Config Module Related Configurations ***************#
+### If use MySQL as datasource:
+spring.datasource.platform=mysql
+
+### Count of DB:
+db.num=1
+
+### Connect URL of DB:
+db.url.0=jdbc:mysql://127.0.0.1:3306/nacos?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC
+db.user.0=root
+db.password.0=123456
+
+### Connection pool configuration: hikariCP
+db.pool.config.connectionTimeout=30000
+db.pool.config.validationTimeout=10000
+db.pool.config.maximumPoolSize=20
+db.pool.config.minimumIdle=2
+```
+于是直接创建nacos库，并执行nacos-mysql.sql脚本
+重新启动解决之前的报错
+
+
+于是又遇到了java.net.UnknownHostException: jmenv.tbsite.net 
+好多异常查询资料，只要将conf目录下的cluster.conf.example复制一份cluster.conf里面保持为空即可启动
+
+或者直接修改startup.cmd文件，将set MODE改为"standalone"也可
+随后就能启动成功
+进入http://127.0.0.1:8848/nacos/   使用nacos/nacos 登录
+
+
+
 
