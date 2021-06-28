@@ -13,6 +13,36 @@ tags:
 Nacos 致力于帮助您发现、配置和管理微服务。Nacos 提供了一组简单易用的特性集，帮助您快速实现动态服务发现、服务配置、服务元数据及流量管理。
 Nacos 帮助您更敏捷和容易地构建、交付和管理微服务平台。 Nacos 是构建以“服务”为中心的现代应用架构 (例如微服务范式、云原生范式) 的服务基础设施。
 
+
+# 基本概念
+
+## 服务 (Service)
+服务是指一个或一组软件功能（例如特定信息的检索或一组操作的执行），其目的是不同的客户端可以为不同的目的重用（例如通过跨进程的网络调用）。Nacos 支持主流的服务生态，如 Kubernetes Service、gRPC|Dubbo RPC Service 或者 Spring Cloud RESTful Service.
+
+## 服务注册中心 (Service Registry)
+服务注册中心，它是服务，其实例及元数据的数据库。服务实例在启动时注册到服务注册表，并在关闭时注销。服务和路由器的客户端查询服务注册表以查找服务的可用实例。服务注册中心可能会调用服务实例的健康检查 API 来验证它是否能够处理请求。
+
+## 服务元数据 (Service Metadata)
+服务元数据是指包括服务端点(endpoints)、服务标签、服务版本号、服务实例权重、路由规则、安全策略等描述服务的数据
+
+## 服务提供方 (Service Provider)
+是指提供可复用和可调用服务的应用方
+
+## 服务消费方 (Service Consumer)
+是指会发起对某个服务调用的应用方
+
+## 配置 (Configuration)
+在系统开发过程中通常会将一些需要变更的参数、变量等从代码中分离出来独立管理，以独立的配置文件的形式存在。目的是让静态的系统工件或者交付物（如 WAR，JAR 包等）更好地和实际的物理运行环境进行适配。配置管理一般包含在系统部署的过程中，由系统管理员或者运维人员完成这个步骤。配置变更是调整系统运行时的行为的有效手段之一。
+
+## 配置管理 (Configuration Management)
+在数据中心中，系统中所有配置的编辑、存储、分发、变更管理、历史版本管理、变更审计等所有与配置相关的活动统称为配置管理。
+
+## 名字服务 (Naming Service)
+提供分布式系统中所有对象(Object)、实体(Entity)的“名字”到关联的元数据之间的映射管理服务，例如 ServiceName -> Endpoints Info, Distributed Lock Name -> Lock Owner/Status Info, DNS Domain Name -> IP List, 服务发现和 DNS 就是名字服务的2大场景。
+
+## 配置服务 (Configuration Service)
+在服务或者应用运行过程中，提供动态配置或者元数据以及配置管理的服务提供者。
+
 # Nacos特性
 ## 服务发现和服务健康监测
 Nacos 支持基于 DNS 和基于 RPC 的服务发现。服务提供者使用 原生SDK、OpenAPI、或一个独立的Agent TODO注册 Service 后，服务消费者可以使用DNS TODO 或HTTP&API查找和发现服务。
@@ -86,3 +116,237 @@ db.pool.config.minimumIdle=2
 
 
 
+# 注册服务提供者
+在父pom文件中引入spring-cloud-alibaba依赖
+```
+    <properties>
+        <!-- Spring Settings -->
+        <spring-cloud.version>Finchley.SR4</spring-cloud.version>
+        <spring-cloud-alibaba.version>0.9.0.RELEASE</spring-cloud-alibaba.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+```
+
+## pom
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>springcloudalibaba</groupId>
+        <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../spring-cloud-alibaba-dependencies/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>spring-cloud-alibaba-provider</artifactId>
+    <packaging>jar</packaging>
+
+
+    <dependencies>
+        <!-- Spring Boot Begin -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Spring Boot End -->
+
+        <!-- Spring Cloud Begin -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!-- Spring Cloud End -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.cfeng.spring.cloud.alibaba.nacos.provider.NacosProviderApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+## 配置文件
+```
+spring.application.name: nacos-provider
+spring.cloud.nacos.discovery.server-addr: 127.0.0.1:8848
+
+server.port: 8081
+
+management.endpoints.web.exposure.include: "*"
+```
+
+## Application
+```
+package com.cfeng.spring.cloud.alibaba.nacos.provider;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * @author: cfeng
+ * @date: 2021/6/27
+ * @description:
+ */
+
+@SpringBootApplication
+@EnableDiscoveryClient
+public class NacosProviderApplication {
+    public static void main(String[] args) {
+        System.setProperty("nacos.standalone", "true");
+        SpringApplication.run(NacosProviderApplication.class, args);
+    }
+
+    @RestController
+    class EchoController {
+
+        @GetMapping("/")
+        public ResponseEntity index() {
+            return new ResponseEntity("index error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        @GetMapping("/test")
+        public ResponseEntity test() {
+            return new ResponseEntity("error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        @GetMapping("/sleep")
+        public String sleep() {
+            try {
+                Thread.sleep(1000L);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "ok";
+        }
+
+        @GetMapping("/echo/{string}")
+        public String echo(@PathVariable String string) {
+            return "hello Nacos Discovery " + string;
+        }
+
+        @GetMapping("/divide")
+        public String divide(@RequestParam Integer a, @RequestParam Integer b) {
+            return String.valueOf(a / b);
+        }
+
+    }
+}
+
+```
+
+# 注册服务消费者feign
+
+## pom
+```
+<dependencies>
+        <!-- Spring Boot Begin -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Spring Boot End -->
+
+        <!-- Spring Cloud Begin -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!-- Spring Cloud End -->
+    </dependencies>
+```
+
+## Application
+```
+@SpringBootApplication
+@EnableDiscoveryClient
+@EnableFeignClients
+public class NacosConsumerApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(NacosConsumerApplication.class, args);
+    }
+}
+```
+
+## interface
+```
+@FeignClient(value = "nacos-provider")
+public interface EchoService {
+
+    @GetMapping(value = "/echo/{message}")
+    String echo(@PathVariable("message") String message);
+
+}
+```
+
+## controller
+```
+@RestController
+public class NacosConsumerFeignController {
+    @Autowired
+    private EchoService echoService;
+
+    @GetMapping(value = "/echo/hi")
+    public String echo() {
+        return echoService.echo("Hi Feign");
+    }
+}
+```
