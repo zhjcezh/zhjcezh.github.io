@@ -2,7 +2,7 @@
 layout:     post
 title:      Nacos
 subtitle:   "spring cloud alibaba 学习"
-date:       2019-10-24 11:00:00
+date:       2021-6-28 11:00:00
 author:     "Cfeng"
 header-img: "img/post-bg-alibaba.jpg"
 catalog: true
