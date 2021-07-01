@@ -350,3 +350,20 @@ public class NacosConsumerFeignController {
     }
 }
 ```
+
+## properties
+```
+spring.application.name:nacos-consumer-feign
+spring.cloud.nacos.discovery.server-addr: 127.0.0.1:8848
+
+server.port:9092
+
+management.endpoints.web.exposure.include: "*"
+
+
+feign.compression.request.enabled:true #开启
+feign.compression.request.mime-types:text/xml,application/xml,application/json #开启支持压缩的MIME TYPE
+feign.compression.request.min-request-size:2048 #配置压缩数据大小的下限
+feign.compression.response: #响应
+feign.compression.response.enabled:true #开启响应GZIP压缩
+```
