@@ -2,7 +2,7 @@
 layout:     post
 title:      feign整合sentinel
 subtitle:   "spring cloud alibaba 学习"
-date:       2019-10-24 11:00:00
+date:       2021-7-1 11:00:00
 author:     "Cfeng"
 header-img: "img/post-bg-alibaba.jpg"
 catalog: true
